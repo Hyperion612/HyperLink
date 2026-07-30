@@ -6,28 +6,141 @@
     <title>HyperLink • Панель управления</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .alert {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: #4a90e2;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #3a7bd5;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #7f95bf;
+            font-weight: 500;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1a1f35;
+            border: 1px solid #2a2f45;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+        }
+        .platform-edit {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .platform-edit span {
+            font-weight: 600;
+            min-width: 150px;
+            color: #4a90e2;
+        }
+        .news-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        small {
+            display: block;
+            margin-top: 5px;
+            color: #7f95bf;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body class="admin-body">
     <div class="admin-container">
         <h1 class="admin-title"><i class="fa-solid fa-sliders"></i> Управление HyperLink</h1>
         
+        {% if request.query_params.get('success') %}
+        <div class="alert alert-success">
+            {% if request.query_params.get('success') == 'profile_updated' %}
+            ✅ Профиль успешно обновлен! <a href="/" target="_blank" style="color: #28a745;">Посмотреть сайт</a>
+            {% elif request.query_params.get('success') == 'platform_updated' %}
+            ✅ Платформа обновлена!
+            {% elif request.query_params.get('success') == 'release_updated' %}
+            ✅ Релиз обновлен!
+            {% elif request.query_params.get('success') == 'news_added' %}
+            ✅ Новость добавлена!
+            {% elif request.query_params.get('success') == 'news_deleted' %}
+            ✅ Новость удалена!
+            {% endif %}
+        </div>
+        {% endif %}
+        
         <!-- Профиль -->
         <div style="margin-bottom: 30px;">
             <h3 style="color: #4a90e2; margin-bottom: 15px;">📷 Профиль</h3>
+            
             <form method="POST" action="/admin/update-profile">
                 <div class="form-group">
                     <label>URL аватара</label>
-                    <input type="text" name="avatar" class="form-control" value="{{ profile.avatar }}">
+                    <input type="url" name="avatar" class="form-control" 
+                           value="{{ profile.avatar }}" required
+                           placeholder="https://example.com/avatar.jpg">
+                    <small>💡 Используйте прямую ссылку на изображение (jpg, png, webp)</small>
                 </div>
+                
                 <div class="form-group">
                     <label>Имя артиста</label>
-                    <input type="text" name="name" class="form-control" value="{{ profile.name }}">
+                    <input type="text" name="name" class="form-control" 
+                           value="{{ profile.name }}" required
+                           placeholder="HyperLink">
                 </div>
+                
                 <div class="form-group">
-                    <label>Био</label>
-                    <input type="text" name="bio" class="form-control" value="{{ profile.bio }}">
+                    <label>Био / Краткое описание</label>
+                    <input type="text" name="bio" class="form-control" 
+                           value="{{ profile.bio }}" required
+                           placeholder="music producer & artist">
                 </div>
-                <button type="submit" class="btn btn-primary">💾 Сохранить профиль</button>
+                
+                <button type="submit" class="btn btn-primary">
+                    💾 Сохранить профиль
+                </button>
             </form>
         </div>
         
@@ -42,8 +155,8 @@
                 <div class="platform-edit">
                     <i class="{{ platform.icon }}" style="color: #4a90e2;"></i>
                     <span>{{ platform.name }}</span>
-                    <input type="text" name="url" class="form-control" value="{{ platform.url }}">
-                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">OK</button>
+                    <input type="text" name="url" class="form-control" value="{{ platform.url }}" required>
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">✓</button>
                 </div>
             </form>
             {% endfor %}
@@ -58,18 +171,20 @@
                 <div class="form-group">
                     <label>Название</label>
                     <input type="text" name="title" class="form-control" 
-                           value="{{ release.title if release else '' }}">
+                           value="{{ release.title if release else '' }}" required
+                           placeholder="Новый сингл 'Neon'">
                 </div>
                 <div class="form-group">
                     <label>Дата выхода</label>
                     <input type="text" name="release_date" class="form-control" 
-                           value="{{ release.release_date if release else '' }}" 
-                           placeholder="например, 25.12.2025">
+                           value="{{ release.release_date if release else '' }}" required
+                           placeholder="25.12.2025">
                 </div>
                 <div class="form-group">
                     <label>Ссылка на pre-save</label>
-                    <input type="text" name="link" class="form-control" 
-                           value="{{ release.link if release else '#' }}">
+                    <input type="url" name="link" class="form-control" 
+                           value="{{ release.link if release else '#' }}" required
+                           placeholder="https://band.link/neon">
                 </div>
                 <button type="submit" class="btn btn-primary">💾 Обновить релиз</button>
             </form>
@@ -85,28 +200,34 @@
                 <div class="form-group">
                     <label>Дата</label>
                     <input type="text" name="date" class="form-control" 
-                           placeholder="25.12.2025">
+                           placeholder="25.12.2025" required>
                 </div>
                 <div class="form-group">
                     <label>Текст новости</label>
                     <textarea name="text" class="form-control" 
-                              placeholder="Текст новости..."></textarea>
+                              placeholder="Текст новости..." required
+                              style="resize: vertical; min-height: 80px;"></textarea>
                 </div>
                 <button type="submit" class="btn btn-success">➕ Добавить новость</button>
             </form>
             
+            <!-- Список новостей -->
             <div>
-                {% for item in news %}
-                <div class="news-list-item">
-                    <div>
-                        <strong>{{ item.date }}</strong> — {{ item.text }}
+                {% if news %}
+                    {% for item in news %}
+                    <div class="news-list-item">
+                        <div>
+                            <strong>{{ item.date }}</strong> — {{ item.text }}
+                        </div>
+                        <form method="POST" action="/admin/delete-news" style="display: inline;">
+                            <input type="hidden" name="news_id" value="{{ item.id }}">
+                            <button type="submit" class="btn btn-danger" style="padding: 6px 14px;">🗑️</button>
+                        </form>
                     </div>
-                    <form method="POST" action="/admin/delete-news" style="display: inline;">
-                        <input type="hidden" name="news_id" value="{{ item.id }}">
-                        <button type="submit" class="btn btn-danger" style="padding: 6px 14px;">🗑️</button>
-                    </form>
-                </div>
-                {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p style="color: #7f95bf;">Новостей пока нет. Добавьте первую!</p>
+                {% endif %}
             </div>
         </div>
         
