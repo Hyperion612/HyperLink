@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.name }} • HyperLink</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="glass-panel">
+        <!-- Профиль -->
+        <div class="profile-section">
+            <div class="avatar-wrapper">
+                <img src="{{ profile.avatar }}" alt="{{ profile.name }}" class="avatar" 
+                     onerror="this.src='/static/default-avatar.png'">
+            </div>
+            <h1 class="artist-name">{{ profile.name }}</h1>
+            <span class="artist-bio">{{ profile.bio }}</span>
+        </div>
+
+        <!-- Соцсети -->
+        {% if socials %}
+        <div class="section">
+            <div class="section-title">
+                <i class="fa-solid fa-share-nodes"></i> Социальные сети
+            </div>
+            <div class="social-grid">
+                {% for social in socials %}
+                <a href="{{ social.url }}" target="_blank" class="social-btn">
+                    <i class="{{ social.icon }}"></i>
+                    <span>{{ social.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Музыкальные платформы -->
+        {% if music %}
+        <div class="section">
+            <div class="section-title">
+                <i class="fa-solid fa-headphones"></i> Стриминговые площадки
+            </div>
+            <div class="music-list">
+                {% for platform in music %}
+                <div class="platform-item">
+                    <div class="platform-info">
+                        <i class="{{ platform.icon }}"></i>
+                        <span>{{ platform.name }}</span>
+                    </div>
+                    <a href="{{ platform.url }}" target="_blank" class="listen-link">Слушать</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ближайший релиз -->
+        {% if release %}
+        <div class="section">
+            <div class="section-title">
+                <i class="fa-solid fa-calendar-star"></i> Ближайший релиз
+            </div>
+            <div class="release-card">
+                <div class="release-info">
+                    <h3>{{ release.title }}</h3>
+                    <span class="release-date">{{ release.release_date }}</span>
+                </div>
+                <a href="{{ release.link }}" target="_blank" class="pre-save-btn">Pre-save</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Новости -->
+        {% if news %}
+        <div class="section">
+            <div class="section-title">
+                <i class="fa-solid fa-newspaper"></i> Новости
+            </div>
+            <div class="news-feed">
+                {% for item in news %}
+                <div class="news-item">
+                    <div class="news-date">{{ item.date }}</div>
+                    <div class="news-text">{{ item.text }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="footer">HyperLink © {{ now().year if now else '2026' }}</div>
+    </div>
+</body>
+</html>
